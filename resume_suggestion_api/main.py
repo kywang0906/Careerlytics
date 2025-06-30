@@ -68,7 +68,7 @@ class RewriteItem(BaseModel):
 class RewriteResponse(BaseModel):
     items: List[RewriteItem]
 
-# --- Pydantic models of Assync tasks ---
+# --- Pydantic models of Async tasks ---
 class RewriteTaskSubmitResponse(BaseModel):
     task_id: str
 
@@ -93,14 +93,14 @@ SKILL_FILES = {
     'swe': 'skills/swe_skills.txt'
 }
 
-# --- 任務管理與鎖 ---
+# --- Task management and lock ---
 task_results: Dict[str, dict] = {}
-llm_lock = threading.Lock() # 2. 在全域建立一個鎖
+llm_lock = threading.Lock()  # 2. Create a global lock
 
 # --- App initialization ---
 app = FastAPI(title="Resume API")
 
-# --- 用於儲存背景任務結果的記憶體字典 ---
+# --- In-memory dictionary for storing background task results ---
 task_results: Dict[str, dict] = {}
 
 
@@ -156,18 +156,7 @@ def build_input_text(req: ClassificationRequest) -> str:
         parts.append("Courses: " + " ".join(cous) + "[SEP]")
     return " ".join(parts)
 
-def collect_bullet(classification):
-    bullets = []
-    if classification:
-        for item in classification:
-            if item.description:
-                item.description.split("\n")
-                for sub in item.description:
-                    if sub:
-                        bullets.append(sub)
-    return bullets
-
-# --- Implement in background ---
+# Implement in background
 def rewrite_in_background(task_id: str, req: ClassificationRequest):
     logger.info(f"Task {task_id}: Rewrite task started.")
     
@@ -175,36 +164,33 @@ def rewrite_in_background(task_id: str, req: ClassificationRequest):
         logger.info(f"Task {task_id}: Lock acquired, starting inference.")
         try:
             task_results[task_id] = {"status": "PROCESSING", "result": None}
-            # 1. 先收集所有原始的、未經處理的文字區塊
+            # Collect all the original, unprocessed text blocks
             all_description_blocks = [e.description for e in req.experience if e.description] + \
                                      [p.description for p in req.projects if p.description] + \
                                      [q.description for q in req.publications if q.description]
             
-            # 2. 建立一個新的 list 來存放所有被拆分和清理過的獨立 bullet points
+            # Create a new list to hold all split and cleaned individual bullet points
             all_individual_bullets: List[str] = []
             for block in all_description_blocks:
-                # 根據換行符號進行切割
+                # Split based on newline characters
                 lines = block.split('\n')
                 for line in lines:
-                    # 去除每行前後的空白
+                    # Remove leading and trailing whitespace from each line
                     cleaned_line = line.strip()
-                    # 使用正規表示式去除行首可能存在的項目符號 (•, *, -) 和之後的空白
-                    # ^[•*-] 表示以 • 或 * 或 - 開頭
-                    # \s* 表示零個或多個空白字元
+                    # Use regex to remove any leading bullets (•, *, -) and following whitespace
+                    # ^[•*-] indicates a line starting with • or * or -
+                    # \s* matches zero or more whitespace characters
                     cleaned_line = re.sub(r'^[•*-]\s*', '', cleaned_line)
                     
-                    # 如果清理後該行還有內容，則將其加入到最終的列表中
+                    # If the cleaned line still contains text, add it to the final list
                     if cleaned_line:
                         all_individual_bullets.append(cleaned_line)
 
-            # --- 修改結束 ---
-
             items: List[RewriteItem] = []
-            # 現在，我們遍歷的是被拆分好的 all_individual_bullets 列表
+            # Iterate over the cleaned individual bullets
             for i, bullet in enumerate(all_individual_bullets):
                 logger.info(f"Task {task_id}: Rewriting bullet {i+1}/{len(all_individual_bullets)}")
                 suggestion = rewrite_bullet(bullet)
-                # original 欄位現在儲存的是清理過後的單一句子
                 items.append(RewriteItem(original=bullet, suggestion=suggestion))
             
             final_result = RewriteResponse(items=items)
@@ -216,7 +202,6 @@ def rewrite_in_background(task_id: str, req: ClassificationRequest):
             task_results[task_id] = {"status": "FAILED", "result": None}
 
 
-# --- Endpoints ---
 @app.post("/predict", response_model=ClassificationResponse)
 def predict(req: ClassificationRequest):
     try:
@@ -234,7 +219,7 @@ def predict(req: ClassificationRequest):
 @app.post("/start-rewrite", response_model=RewriteTaskSubmitResponse, status_code=202)
 def start_rewrite(req: ClassificationRequest, background_tasks: BackgroundTasks):
     """
-    這個路由會立即返回一個任務 ID，並在背景開始執行耗時的改寫工作。
+    This route immediately returns a task ID and starts the time-consuming rewrite work in the background.
     """
     task_id = str(uuid.uuid4())
     task_results[task_id] = {"status": "PENDING", "result": None}
@@ -244,7 +229,7 @@ def start_rewrite(req: ClassificationRequest, background_tasks: BackgroundTasks)
 @app.get("/rewrite-status/{task_id}", response_model=RewriteStatusResponse)
 def get_rewrite_status(task_id: str):
     """
-    用上一步拿到的 task_id 來查詢任務的目前狀態。
+    Use the previously obtained task_id to check the current status of the task.
     """
     task = task_results.get(task_id)
     if not task:
