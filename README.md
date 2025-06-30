@@ -1,4 +1,4 @@
-# Careerlytics - AI-Powered Resume Analysis System
+# Careerlytics: AI-Powered Resume Analysis System
 
 Careerlytics is an intelligent resume analysis system designed to help tech professionals optimize their resumes and identify their ideal job roles. By inputting their resume details, users receive AI-driven job predictions, a relevant skill word cloud, and professional rewrite suggestions for their experience descriptions.
 
