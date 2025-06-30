@@ -12,15 +12,15 @@ const RewriteSuggestions = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 新增一個 state 來儲存從後端拿到的 task_id
+  // Add a state to store the task_id returned from the backend
   const [taskId, setTaskId] = useState(null);
 
-  // 使用 useRef 來儲存 interval ID，以便在需要時清除它
+  // Use useRef to store interval ID so it can be cleared when needed
   const intervalRef = useRef(null);
 
-  // 第一個 useEffect：只在組件載入時執行一次，用於提交任務
+  // First useEffect: runs only once on component mount, used to submit the task
   useEffect(() => {
-    // 防呆：如果沒有 payload，直接報錯
+    // Guard clause: show error if there's no payload
     if (!payload) {
       setError('Missing resume data. Please go back and try again.');
       setLoading(false);
@@ -42,7 +42,7 @@ const RewriteSuggestions = () => {
         }
 
         const data = await res.json();
-        // 將後端回傳的 task_id 存到 state 中
+        // Save the task_id returned from backend into state
         setTaskId(data.task_id);
         console.log('Task started with ID:', data.task_id);
 
@@ -55,29 +55,29 @@ const RewriteSuggestions = () => {
 
     startRewriteTask();
 
-    // 在組件卸載時，確保清除任何可能存在的 interval
+    // Ensure any existing interval is cleared on component unmount
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [payload]); // 依賴 payload，確保只執行一次
+  }, [payload]); // Depends on payload, only run once
 
-  // 第二個 useEffect：當 taskId 被設定後，開始輪詢任務狀態
+  // Second useEffect: start polling once taskId is set
   useEffect(() => {
-    // 只有當 taskId 有值，且還在 loading 狀態時，才開始輪詢
+    // Only start polling if taskId is set and still in loading state
     if (!taskId || !loading) {
       return;
     }
 
     console.log(`Step 2: Polling status for task ${taskId}...`);
 
-    // 設定一個計時器，每 5 秒鐘查詢一次狀態
+    // Set a timer to poll status every 5 seconds
     intervalRef.current = setInterval(async () => {
       try {
         const res = await fetch(`/rewrite-status/${taskId}`);
         if (!res.ok) {
-          // 如果查詢失敗，也當作任務失敗處理
+          // Treat failed status check as task failure
           throw new Error(`Failed to poll status: ${res.status}`);
         }
         const data = await res.json();
@@ -85,36 +85,34 @@ const RewriteSuggestions = () => {
         console.log('Current task status:', data.status);
 
         if (data.status === 'COMPLETED') {
-          // 任務完成！
-          clearInterval(intervalRef.current); // 清除計時器
+          // Task is completed!
+          clearInterval(intervalRef.current); // Clear the timer
           setItems(data.result.items || []);
           setLoading(false);
           console.log('Task completed!', data.result);
         } else if (data.status === 'FAILED') {
-          // 任務失敗！
-          clearInterval(intervalRef.current); // 清除計時器
+          // Task failed!
+          clearInterval(intervalRef.current); // Clear the timer
           setError('Rewrite task failed on the server. Please try again.');
           setLoading(false);
         }
-        // 如果狀態是 PENDING 或 PROCESSING，則什麼都不做，等待下一次輪詢
+        // Do nothing if status is PENDING or PROCESSING; wait for next poll
       } catch (err) {
-        // 捕獲輪詢過程中的網路錯誤
+        // Catch network errors during polling
         console.error(err);
         setError(err.message);
         setLoading(false);
-        clearInterval(intervalRef.current); // 清除計時器
+        clearInterval(intervalRef.current); // Clear the timer
       }
-    }, 5000); // 每 5000 毫秒 (5秒) 查詢一次
+    }, 5000); // Poll every 5000ms (5 seconds)
 
-    // 這個 useEffect 的清理函式
+    // Cleanup function for this useEffect
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [taskId, loading]); // 依賴 taskId 和 loading
-
-  // --- 以下的 JSX 渲染部分維持不變 ---
+  }, [taskId, loading]); // Depends on taskId and loading
 
   if (loading) {
     return <div className="text-center mt-5">
