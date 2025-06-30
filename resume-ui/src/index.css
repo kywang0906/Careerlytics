@@ -1,0 +1,89 @@
+/* 1. 全域 CSS 變數與基礎設定 */
+:root {
+  --primary-color: #0d6efd; /* Bootstrap Primary Color */
+  --background-color: #f8f9fa;
+  --text-color: #333;
+  --border-color: #dee2e6;
+  --header-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* 讓 #root 成為內容的容器 */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1; /* 讓 main 區域填滿 Header 外的剩餘空間 */
+}
+
+
+/* 2. Header 組件樣式 */
+.header {
+  padding: 1rem 2rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--header-shadow);
+}
+
+.header-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-color);
+  text-decoration: none;
+}
+.header-brand:hover {
+  color: var(--primary-color);
+}
+
+
+/* 3. LandingPage 組件樣式 (Hero Section) */
+.hero {
+  text-align: center;
+  padding: 80px 20px;
+  background-color: #ffffff; /* 讓它跟背景色有點區別 */
+  border-bottom: 1px solid var(--border-color);
+}
+
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: #6c757d;
+  max-width: 600px;
+  margin: 0 auto 1.5rem auto;
+}
+
+
+/* 4. ResumeInputForm 組件樣式 */
+.form-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+/* 讓 submit 按鈕在 hover 時有輕微上浮效果 */
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
