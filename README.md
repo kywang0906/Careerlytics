@@ -77,5 +77,6 @@ npm run dev
 
 ## 🚀 Demo Preview
 Here's a quick look at the main features:
+> Note: The URL shown in the demo is no longer active.
 
 ![Demo](https://github.com/user-attachments/assets/21eda0b2-13cb-40e6-aa79-5975e0b92dd1)
