@@ -78,4 +78,4 @@ npm run dev
 ## 🚀 Demo Preview
 Here's a quick look at the main features:
 
-![Demo](https://github.com/user-attachments/assets/3017f59b-b4ce-481a-b987-ae20253976c3)
+![Demo](https://github.com/user-attachments/assets/21eda0b2-13cb-40e6-aa79-5975e0b92dd1)
