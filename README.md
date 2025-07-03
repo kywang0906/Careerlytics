@@ -55,7 +55,7 @@ deployed-files/resume-app/
 * **Gemma-2 Generative Model**: A locally hosted large language model (GGUF format), used to rewrite experience descriptions into FAANG-style resume bullets.
 * **Text Embedding**: Supports BERT-based embeddings depending on the model training task.
 
-## 🚀 How to Use
+## 💡 How to Use
 
 1. Start the FastAPI backend by navigating to the root directory of the backend (e.g., `resume_suggestion_api/`) and run:
 
