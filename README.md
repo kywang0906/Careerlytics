@@ -21,6 +21,9 @@ This project uses a decoupled frontend and backend architecture.
     * **Generative Model**: Runs a GGUF-formatted Gemma-2 model on the CPU using `llama-cpp-python` for text generation.
 
 ## 🗂️ Project Structure
+<details>
+<summary>Click to view full directory tree</summary>
+   
 ```
 deployed-files/resume-app/
 │
@@ -48,6 +51,7 @@ deployed-files/resume-app/
 │
 └── README.md # This project documentation
 ```
+</details>
 
 ## 🧠 Model Overview
 
