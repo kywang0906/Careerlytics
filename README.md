@@ -75,3 +75,7 @@ npm run dev
 3. Upload your resume content, and receive job predictions, key skills, and rewritten suggestions instantly.
 <img width="1438" alt="image" src="https://github.com/user-attachments/assets/1cc61f7b-e5c3-4b47-9803-a82fd70f00b3" />
 
+## 🚀 Demo Preview
+Here's a quick look at the main features:
+
+![Demo](https://github.com/user-attachments/assets/3017f59b-b4ce-481a-b987-ae20253976c3)
